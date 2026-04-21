@@ -11,7 +11,7 @@ app.use(express.json());
 app.all('/mcp', async (req, res) => {
   const server = new McpServer({
     name: 'btc-outreach-mcp',
-    version: '1.0.0',
+    version: '1.1.0',
   });
 
   server.tool(
@@ -21,12 +21,13 @@ app.all('/mcp', async (req, res) => {
       to: z.string().describe('Recipient email address'),
       subject: z.string().describe('Email subject line'),
       body: z.string().describe('Email body text'),
+      label: z.string().optional().describe('Optional Gmail label name to apply to the draft. If the label does not exist it will be created automatically.'),
     },
-    async ({ to, subject, body }) => {
+    async ({ to, subject, body, label }) => {
       const response = await fetch(GAS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to, subject, body }),
+        body: JSON.stringify({ to, subject, body, label }),
       });
       const result = await response.json();
       return {
